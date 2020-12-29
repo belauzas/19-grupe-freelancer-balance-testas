@@ -1,42 +1,27 @@
-function formatMoney(money) {
-    if (typeof money !== 'number') {
-        return '-';
-    }
-    return money + ' Eur';
-}
+const formatMoney = money => typeof money !== 'number' ? '-' : money + ' Eur';
 
-function sortData(list) {
-    let sortedList = [];
+const totalIncome = list => list.reduce((total, item) => total += item.income ? item.income : 0, 0);
+const totalExpense = list => list.reduce((total, item) => total += item.expense ? item.expense : 0, 0);
 
-    // sortedList = list.sort((a, b) => a.month - b.month);
+const sortDataByMonth = list => list.sort((a, b) => a.month - b.month);
+const sortDataByIncome = list => [...list].sort((a, b) => (a.income ? a.income : 0) - (b.income ? b.income : 0));
+const sortDataByExpense = list => [...list].sort((a, b) => (a.expense ? a.expense : 0) - (b.expense ? b.expense : 0));
 
-    for (let i = 1; i <= 12; i++) {
-        for (let k = 0; k < list.length; k++) {
-            if (list[k].month === i) {
-                sortedList.push(list[k]);
-                break;
-            }
-        }
-    }
+const minIncome = list => sortDataByIncome(list).filter(a => a.income > 0)[0];
+const maxIncome = list => sortDataByIncome(list)[list.length - 1];
 
-    return sortedList;
-}
+const minExpense = list => sortDataByExpense(list).filter(a => a.expense > 0)[0];
+const maxExpense = list => sortDataByExpense(list)[list.length - 1];
+
+const getMonthName = (monthObject, monthNames) => monthNames[monthObject.month - 1];
 
 function renderTable(monthNames, cashFlow) {
     let HTML = '',
         balance = 0,
         income = 0,
-        expense = 0,
-        minIncomeMonthIndex = 0,
-        minIncomeMonthValue = Infinity,
-        maxIncomeMonthIndex = 0,
-        maxIncomeMonthValue = -Infinity,
-        minExpenseMonthIndex = 0,
-        minExpenseMonthValue = Infinity,
-        maxExpenseMonthIndex = 0,
-        maxExpenseMonthValue = -Infinity;
+        expense = 0;
 
-    cashFlow = sortData(cashFlow);
+    cashFlow = sortDataByMonth(cashFlow);
 
     for (let i = 0; i < cashFlow.length; i++) {
         const item = cashFlow[i];
@@ -44,27 +29,6 @@ function renderTable(monthNames, cashFlow) {
         income += item.income ? item.income : 0;
         expense += item.expense ? item.expense : 0;
         balance = income - expense;
-
-        // ar tai menuo, kai uzdirbau maziausiai
-        if (item.income && item.income < minIncomeMonthValue) {
-            minIncomeMonthValue = item.income;
-            minIncomeMonthIndex = i;
-        }
-        // ar tai menuo, kai uzdirbau daugiausiai
-        if (item.income && item.income > maxIncomeMonthValue) {
-            maxIncomeMonthValue = item.income;
-            maxIncomeMonthIndex = i;
-        }
-        // ar tai menuo, kai isleidau maziausiai
-        if (item.expense && item.expense < minExpenseMonthValue) {
-            minExpenseMonthValue = item.expense;
-            minExpenseMonthIndex = i;
-        }
-        // ar tai menuo, kai isleidau daugiausiai
-        if (item.expense && item.expense > maxExpenseMonthValue) {
-            maxExpenseMonthValue = item.expense;
-            maxExpenseMonthIndex = i;
-        }
 
         HTML += `<div class="table-row">
                     <div class="cell">${i + 1}</div>
@@ -75,25 +39,19 @@ function renderTable(monthNames, cashFlow) {
                 </div>`;
     }
 
-    const tableContentDOM = document.querySelector('.table-content');
-    const footerIncomeDOM = document.querySelector('.table-footer > .cell:nth-of-type(3)');
-    const footerExpenseDOM = document.querySelector('.table-footer > .cell:nth-of-type(4)');
-    const footerBalanceDOM = document.querySelector('.table-footer > .cell:nth-of-type(5)');
-    const minIncomeDOM = document.querySelector('#minIncome');
-    const maxIncomeDOM = document.querySelector('#maxIncome');
-    const minExpenseDOM = document.querySelector('#minExpense');
-    const maxExpenseDOM = document.querySelector('#maxExpense');
-
-    tableContentDOM.innerHTML = HTML;
-
-    footerIncomeDOM.innerText = formatMoney(income);
-    footerExpenseDOM.innerText = formatMoney(expense);
-    footerBalanceDOM.innerText = formatMoney(balance);
-
-    minIncomeDOM.innerText = monthNames[minIncomeMonthIndex];
-    maxIncomeDOM.innerText = monthNames[maxIncomeMonthIndex];
-    minExpenseDOM.innerText = monthNames[minExpenseMonthIndex];
-    maxExpenseDOM.innerText = monthNames[maxExpenseMonthIndex];
+    document.querySelector('.table-content').innerHTML = HTML;
 }
+
+const totalIncomeSum = totalIncome(account);
+const totalExpenseSum = totalExpense(account);
+
+document.querySelector('.table-footer > .cell:nth-of-type(3)').innerText = formatMoney(totalIncomeSum);
+document.querySelector('.table-footer > .cell:nth-of-type(4)').innerText = formatMoney(totalExpenseSum);
+document.querySelector('.table-footer > .cell:nth-of-type(5)').innerText = formatMoney(totalIncomeSum - totalExpenseSum);
+
+document.querySelector('#minIncome').innerText = getMonthName(minIncome(account), months);
+document.querySelector('#maxIncome').innerText = getMonthName(maxIncome(account), months);
+document.querySelector('#minExpense').innerText = getMonthName(minExpense(account), months);
+document.querySelector('#maxExpense').innerText = getMonthName(maxExpense(account), months);
 
 renderTable(months, account);
