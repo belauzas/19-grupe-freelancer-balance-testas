@@ -1,40 +1,25 @@
 const formatMoney = money => typeof money !== 'number' ? '-' : money + ' Eur';
-
-const totalIncome = list => list.reduce((total, item) => total += item.income ? item.income : 0, 0);
-const totalExpense = list => list.reduce((total, item) => total += item.expense ? item.expense : 0, 0);
-
-const sortDataByMonth = list => list.sort((a, b) => a.month - b.month);
-const sortDataByIncome = list => [...list].sort((a, b) => (a.income ? a.income : 0) - (b.income ? b.income : 0));
-const sortDataByExpense = list => [...list].sort((a, b) => (a.expense ? a.expense : 0) - (b.expense ? b.expense : 0));
-
-const minIncome = list => sortDataByIncome(list).filter(a => a.income > 0)[0];
-const maxIncome = list => sortDataByIncome(list)[list.length - 1];
-
-const minExpense = list => sortDataByExpense(list).filter(a => a.expense > 0)[0];
-const maxExpense = list => sortDataByExpense(list)[list.length - 1];
-
 const getMonthName = (monthObject, monthNames) => monthNames[monthObject.month - 1];
+const number = n => n ? n : 0;
 
-function renderTable(monthNames, cashFlow) {
+const totalByKey = (list, key) => list.reduce((total, item) => total += number(item[key]), 0);
+
+const sortData = (list, key) => [...list].sort((a, b) => number(a[key]) - number(b[key]));
+const minMonthByKey = (list, key) => sortData(list, key).filter(a => a[key] > 0)[0];
+const maxMonthByKey = (list, key) => sortData(list, key)[list.length - 1];
+
+const renderTable = (monthNames, cashFlow) => {
+    sortedCashFlow = sortData(cashFlow, 'month');
     let HTML = '',
-        balance = 0,
-        income = 0,
-        expense = 0;
+        balance = 0;
 
-    cashFlow = sortDataByMonth(cashFlow);
-
-    for (let i = 0; i < cashFlow.length; i++) {
-        const item = cashFlow[i];
-
-        income += item.income ? item.income : 0;
-        expense += item.expense ? item.expense : 0;
-        balance = income - expense;
-
+    for (const { month, income = 0, expense = 0 } of sortedCashFlow) {
+        balance += income - expense;
         HTML += `<div class="table-row">
-                    <div class="cell">${i + 1}</div>
-                    <div class="cell">${monthNames[item.month - 1]}</div>
-                    <div class="cell">${formatMoney(item.income)}</div>
-                    <div class="cell">${formatMoney(item.expense)}</div>
+                    <div class="cell">${month}</div>
+                    <div class="cell">${monthNames[month - 1]}</div>
+                    <div class="cell">${formatMoney(income)}</div>
+                    <div class="cell">${formatMoney(expense)}</div>
                     <div class="cell">${formatMoney(balance)}</div>
                 </div>`;
     }
@@ -42,16 +27,16 @@ function renderTable(monthNames, cashFlow) {
     document.querySelector('.table-content').innerHTML = HTML;
 }
 
-const totalIncomeSum = totalIncome(account);
-const totalExpenseSum = totalExpense(account);
+const totalsSums = [totalByKey(account, 'income'), totalByKey(account, 'expense'), totalByKey(account, 'income') - totalByKey(account, 'expense')];
+const footerSelector = '.table-footer > .cell:nth-of-type';
+totalsSums.forEach((sum, index) => document.querySelector(`${footerSelector}(${index + 3})`).innerText = formatMoney(sum));
 
-document.querySelector('.table-footer > .cell:nth-of-type(3)').innerText = formatMoney(totalIncomeSum);
-document.querySelector('.table-footer > .cell:nth-of-type(4)').innerText = formatMoney(totalExpenseSum);
-document.querySelector('.table-footer > .cell:nth-of-type(5)').innerText = formatMoney(totalIncomeSum - totalExpenseSum);
-
-document.querySelector('#minIncome').innerText = getMonthName(minIncome(account), months);
-document.querySelector('#maxIncome').innerText = getMonthName(maxIncome(account), months);
-document.querySelector('#minExpense').innerText = getMonthName(minExpense(account), months);
-document.querySelector('#maxExpense').innerText = getMonthName(maxExpense(account), months);
+const findMonths = [
+    { id: 'minIncome', func: minMonthByKey, type: 'income' },
+    { id: 'maxIncome', func: maxMonthByKey, type: 'income' },
+    { id: 'minExpense', func: minMonthByKey, type: 'expense' },
+    { id: 'maxExpense', func: maxMonthByKey, type: 'expense' },
+];
+findMonths.forEach(set => document.querySelector('#' + set.id).innerText = getMonthName(set.func(account, set.type), months));
 
 renderTable(months, account);
