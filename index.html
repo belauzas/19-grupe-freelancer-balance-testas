@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="./css/table.css">
     <link rel="stylesheet" href="./css/custom.css">
 </head>
+
 <body>
     <div class="container">
         <div class="row">
@@ -28,34 +30,13 @@
                     <div class="cell">Balansas</div>
                 </div>
                 <div class="table-content">
-                    <div class="table-row">
+                    <!-- <div class="table-row">
                         <div class="cell">1</div>
                         <div class="cell">Sausis</div>
                         <div class="cell">150.00 Eur</div>
                         <div class="cell">-</div>
                         <div class="cell">150.00 Eur</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="cell">1</div>
-                        <div class="cell">Sausis</div>
-                        <div class="cell">150.00 Eur</div>
-                        <div class="cell">-</div>
-                        <div class="cell">150.00 Eur</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="cell">1</div>
-                        <div class="cell">Sausis</div>
-                        <div class="cell">150.00 Eur</div>
-                        <div class="cell">-</div>
-                        <div class="cell">150.00 Eur</div>
-                    </div>
-                    <div class="table-row">
-                        <div class="cell">1</div>
-                        <div class="cell">Sausis</div>
-                        <div class="cell">150.00 Eur</div>
-                        <div class="cell">-</div>
-                        <div class="cell">150.00 Eur</div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="table-footer">
                     <div class="cell"></div>
@@ -76,19 +57,23 @@
                     <div class="title">mėnuo, kai buvo mažiausiai uždirbta,bet ne lygu nuliui</div>
                 </div>
                 <div class="item">
-                    <div class="value">Mėnesio pavadinimas</div>
+                    <div id="maxIncome" class="value">Mėnesio pavadinimas</div>
                     <div class="title">mėnuo, kai buvo daugiausiai uždirbta</div>
                 </div>
                 <div class="item">
-                    <div class="value">Mėnesio pavadinimas</div>
+                    <div id="minExpense" class="value">Mėnesio pavadinimas</div>
                     <div class="title">mėnuo, kai buvo mažiausiai išlaidos, bet ne lygios nuliui</div>
                 </div>
                 <div class="item">
-                    <div class="value">Mėnesio pavadinimas</div>
+                    <div id="maxExpense" class="value">Mėnesio pavadinimas</div>
                     <div class="title">mėnuo, kai buvo didžiausios išlaidos</div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="./js/data.js"></script>
+    <script src="./js/main.js"></script>
 </body>
+
 </html>
