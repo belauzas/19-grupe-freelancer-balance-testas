@@ -12,9 +12,3 @@ const account = [
     { month: 8, income: 450, expense: 120 },
     { month: 12, expense: 200 }
 ];
-
-const months = [
-    'Sausis', 'Vasaris', 'Kovas', 'Balandis',
-    'Geguze', 'Birzelis', 'Liepa', 'Rugpjutis',
-    'Rugsejis', 'Spalis', 'Lapkritis', 'Groudis',
-];
